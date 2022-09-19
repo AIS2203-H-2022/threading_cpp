@@ -15,7 +15,7 @@ namespace ais2203 {
         std::atomic_bool done;
         std::queue<std::function<void()>> work_queue;
         std::vector<std::thread> threads;
-        std::mutex mutex, mutex2;
+        std::mutex mutex;
         std::condition_variable cv;
 
         void worker_thread() {
@@ -30,7 +30,6 @@ namespace ais2203 {
 
                     task();
 
-                    std::lock_guard<std::mutex> lck(mutex2);
                     cv.notify_one();
 
                 } else {
@@ -50,11 +49,14 @@ namespace ais2203 {
 
         void wait_for_tasks_to_finish() {
 
-
-            std::unique_lock<std::mutex> lck(mutex2);
-            while (!work_queue.empty()) cv.wait(lck);
+            std::unique_lock<std::mutex> lck(mutex);
+            cv.wait(lck, [this] { return work_queue.empty(); });
             lck.unlock();
 
+            finalize();
+        }
+
+        void finalize() {
             done = true;
 
             for (auto &thread : threads) {
@@ -65,7 +67,7 @@ namespace ais2203 {
         }
 
         ~thread_pool() {
-            done = true;
+            finalize();
         }
 
         template<typename FunctionType>
