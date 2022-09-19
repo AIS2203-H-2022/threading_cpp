@@ -5,7 +5,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace example {
+namespace ais2203 {
 
     class semaphore {
     public:
@@ -25,7 +25,7 @@ namespace example {
             count_++;
         }
 
-        unsigned int getCount() const {
+        [[nodiscard]] unsigned int getCount() const {
             return count_;
         }
 
@@ -37,6 +37,6 @@ namespace example {
         std::condition_variable condition_;
     };
 
-}// namespace example
+}// namespace ais2203
 
 #endif//THREADING_CPP_SEMAPHORE_H

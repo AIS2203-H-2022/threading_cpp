@@ -9,7 +9,7 @@
 #include <queue>
 #include <thread>
 
-namespace example {
+namespace ais2203 {
 
     class thread_pool {
         std::atomic_bool done;
@@ -74,6 +74,6 @@ namespace example {
         }
     };
 
-}// namespace example
+}// namespace ais2203
 
 #endif//THREADING_CPP_THREAD_POOL_HPP

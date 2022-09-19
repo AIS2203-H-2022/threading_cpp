@@ -1,12 +1,12 @@
 
-#include "semaphore.hpp"
+#include "ais2203/semaphore.hpp"
 #include <iostream>
 #include <thread>
 
 int main() {
 
     std::mutex m;
-    example::semaphore semaphore(5);
+    ais2203::semaphore semaphore(5);
 
     const int num_threads = 100;
     std::thread threads[num_threads];
