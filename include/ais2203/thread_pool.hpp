@@ -12,6 +12,35 @@
 namespace ais2203 {
 
     class thread_pool {
+
+    public:
+        thread_pool() : done(false) {
+
+            unsigned const thread_count = std::thread::hardware_concurrency();
+            for (unsigned i = 0; i < thread_count; ++i) {
+                threads.emplace_back(&thread_pool::worker_thread, this);
+            }
+        }
+
+        void wait_for_tasks_to_finish() {
+
+            std::unique_lock<std::mutex> lck(mutex);
+            cv.wait(lck, [this] { return work_queue.empty(); });
+            lck.unlock();
+
+            finalize();
+        }
+
+        ~thread_pool() {
+            finalize();
+        }
+
+        template<typename FunctionType>
+        void submit(FunctionType f) {
+            work_queue.push(std::function<void()>(f));
+        }
+
+    private:
         std::atomic_bool done;
         std::queue<std::function<void()>> work_queue;
         std::vector<std::thread> threads;
@@ -38,24 +67,6 @@ namespace ais2203 {
             }
         }
 
-    public:
-        thread_pool() : done(false) {
-
-            unsigned const thread_count = std::thread::hardware_concurrency();
-            for (unsigned i = 0; i < thread_count; ++i) {
-                threads.emplace_back(&thread_pool::worker_thread, this);
-            }
-        }
-
-        void wait_for_tasks_to_finish() {
-
-            std::unique_lock<std::mutex> lck(mutex);
-            cv.wait(lck, [this] { return work_queue.empty(); });
-            lck.unlock();
-
-            finalize();
-        }
-
         void finalize() {
             done = true;
 
@@ -64,15 +75,6 @@ namespace ais2203 {
                     thread.join();
                 }
             }
-        }
-
-        ~thread_pool() {
-            finalize();
-        }
-
-        template<typename FunctionType>
-        void submit(FunctionType f) {
-            work_queue.push(std::function<void()>(f));
         }
     };
 
