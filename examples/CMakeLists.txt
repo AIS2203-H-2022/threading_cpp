@@ -10,3 +10,6 @@ target_include_directories(hello_semaphore PUBLIC "${CMAKE_SOURCE_DIR}/include")
 
 add_executable(hello_pool hello_pool.cpp)
 target_include_directories(hello_pool PUBLIC "${CMAKE_SOURCE_DIR}/include")
+
+add_executable(prod_con prod_con.cpp)
+target_include_directories(prod_con PUBLIC "${CMAKE_SOURCE_DIR}/include")
